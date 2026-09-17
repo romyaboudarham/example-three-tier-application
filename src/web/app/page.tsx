@@ -1,4 +1,5 @@
 import { getTasks, createTask, toggleTask } from './actions';
+import Counter from './Counter';
 
 export default async function Home() {
   const tasks = await getTasks();
@@ -7,8 +8,15 @@ export default async function Home() {
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 py-16 px-4">
       <div className="max-w-lg mx-auto">
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 mb-8">
-          To-Do List
+          Interactive Demo App
         </h1>
+
+        {/* Counter Component */}
+        <Counter />
+
+        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-6">
+          To-Do List
+        </h2>
 
         {/* Add task form */}
         <form action={createTask} className="flex gap-2 mb-8">
