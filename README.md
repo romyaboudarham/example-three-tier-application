@@ -16,7 +16,10 @@ Browser → Web (Next.js :3000) → API (Express :3001) → PostgreSQL
 | Migrations | node-pg-migrate | `src/db/` |
 | Infrastructure | Terraform (GCP) | `src/infrastructure/` |
 
-The app is a simple task manager (to-do list) that demonstrates how the three tiers communicate.
+The app demonstrates both client-side and full-stack interactivity:
+
+- **Click Counter** — A client-side React component with state management (button clicks increment a counter)
+- **Task Manager** — A full three-tier to-do list that demonstrates frontend → API → database communication
 
 ## Running locally with Docker Compose
 
@@ -38,6 +41,11 @@ This starts four services in order:
 4. **web** — Next.js frontend on port 3000 (exposed to host)
 
 Once running, open [http://localhost:3000](http://localhost:3000).
+
+### Features you can interact with
+
+- **Click Counter**: Click the "Click Me!" button to increment a counter, or "Reset" to start over. This demonstrates pure client-side React state management with `useState`.
+- **To-Do List**: Add tasks, toggle them as completed, and watch the data persist in PostgreSQL through the Express API.
 
 ### Stop and clean up
 
@@ -79,6 +87,9 @@ src/
 │   └── Dockerfile
 ├── web/            # Next.js frontend
 │   ├── app/        # App Router pages and components
+│   │   ├── Counter.tsx  # Client-side click counter component
+│   │   ├── page.tsx     # Main page (Server Component)
+│   │   └── actions.ts   # Server Actions for tasks
 │   └── Dockerfile
 └── infrastructure/ # Terraform for GCP deployment
     ├── main.tf
