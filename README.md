@@ -130,3 +130,7 @@ DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate down
 ```
 
 When running via Docker Compose the `migrate` service handles this automatically on startup.
+
+## 🎉 Fun Fact
+
+Did you know? PostgreSQL, the database powering this application, is one of the oldest open-source projects still in active development! The first version was released in 1989 as "Postgres" at UC Berkeley, and it's been continuously improved for over 35 years. Despite being free and open-source, PostgreSQL is so robust and feature-rich that many organizations trust it with mission-critical data—it's even used by some of the world's largest companies alongside their proprietary systems!
