@@ -1,5 +1,6 @@
 import { getTasks, createTask, toggleTask, deleteTask } from './actions';
 import Counter from './Counter';
+import Calculator from './Calculator';
 
 export default async function Home() {
   const tasks = await getTasks();
@@ -13,6 +14,9 @@ export default async function Home() {
 
         {/* Counter Component */}
         <Counter />
+
+        {/* Calculator Component */}
+        <Calculator />
 
         <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-6">
           To-Do List
