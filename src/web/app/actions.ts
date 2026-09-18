@@ -45,3 +45,16 @@ export async function toggleTask(id: number, completed: boolean) {
   
   revalidatePath('/');
 }
+
+export async function deleteTask(id: number) {
+  const res = await fetch(`${API_URL}/tasks/${id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  
+  if (!res.ok) {
+    throw new Error('Failed to delete task');
+  }
+  
+  revalidatePath('/');
+}

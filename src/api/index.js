@@ -54,7 +54,19 @@ app.patch('/tasks/:id', async (req, res) => {
 
     const current = rows[0];
     const newCompleted = completed !== undefined ? Boolean(completed) : current.completed;
-    const newTitle = title !== undefined ? title.trim() : current.title;
+    
+    // Bug #3 fix: safely check if title is a string before calling trim()
+    let newTitle = current.title;
+    if (title !== undefined) {
+      if (typeof title !== 'string') {
+        return res.status(400).json({ error: 'title must be a string' });
+      }
+      newTitle = title.trim();
+      // Bug #4 fix: validate that the trimmed title is not empty
+      if (!newTitle) {
+        return res.status(400).json({ error: 'title cannot be empty' });
+      }
+    }
 
     const { rows: updated } = await db.query(
       'UPDATE tasks SET completed = $1, title = $2 WHERE id = $3 RETURNING *',
@@ -64,6 +76,25 @@ app.patch('/tasks/:id', async (req, res) => {
   } catch (error) {
     console.error('Error updating task:', error);
     res.status(500).json({ error: 'Failed to update task' });
+  }
+});
+
+// DELETE /tasks/:id — delete a task (Bug #1 fix)
+app.delete('/tasks/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid task ID' });
+    }
+
+    const { rows } = await db.query('SELECT * FROM tasks WHERE id = $1', [id]);
+    if (rows.length === 0) return res.status(404).json({ error: 'Not found' });
+
+    await db.query('DELETE FROM tasks WHERE id = $1', [id]);
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    res.status(500).json({ error: 'Failed to delete task' });
   }
 });
 
