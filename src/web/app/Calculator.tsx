@@ -7,8 +7,20 @@ export default function Calculator() {
   const [previousValue, setPreviousValue] = useState<number | null>(null);
   const [operation, setOperation] = useState<string | null>(null);
   const [waitingForNewValue, setWaitingForNewValue] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const resetError = () => {
+    if (isError) {
+      setDisplay('0');
+      setPreviousValue(null);
+      setOperation(null);
+      setWaitingForNewValue(false);
+      setIsError(false);
+    }
+  };
 
   const handleNumberClick = (num: string) => {
+    resetError();
     if (waitingForNewValue) {
       setDisplay(num);
       setWaitingForNewValue(false);
@@ -18,6 +30,7 @@ export default function Calculator() {
   };
 
   const handleDecimal = () => {
+    resetError();
     if (waitingForNewValue) {
       setDisplay('0.');
       setWaitingForNewValue(false);
@@ -27,12 +40,21 @@ export default function Calculator() {
   };
 
   const handleOperation = (nextOp: string) => {
+    if (isError) return;
     const currentValue = parseFloat(display);
 
     if (previousValue === null) {
       setPreviousValue(currentValue);
     } else if (operation) {
       const result = calculate(previousValue, currentValue, operation);
+      if (result === null) {
+        setDisplay('Error');
+        setIsError(true);
+        setPreviousValue(null);
+        setOperation(null);
+        setWaitingForNewValue(false);
+        return;
+      }
       setDisplay(String(result));
       setPreviousValue(result);
     }
@@ -41,7 +63,8 @@ export default function Calculator() {
     setWaitingForNewValue(true);
   };
 
-  const calculate = (prev: number, current: number, op: string): number => {
+  // Returns null when the operation is undefined (e.g. division by zero).
+  const calculate = (prev: number, current: number, op: string): number | null => {
     switch (op) {
       case '+':
         return prev + current;
@@ -50,6 +73,7 @@ export default function Calculator() {
       case '×':
         return prev * current;
       case '÷':
+        if (current === 0) return null; // division by zero is undefined
         return prev / current;
       case '%':
         return prev % current;
@@ -59,10 +83,19 @@ export default function Calculator() {
   };
 
   const handleEquals = () => {
+    if (isError) return;
     const currentValue = parseFloat(display);
 
     if (operation && previousValue !== null) {
       const result = calculate(previousValue, currentValue, operation);
+      if (result === null) {
+        setDisplay('Error');
+        setIsError(true);
+        setPreviousValue(null);
+        setOperation(null);
+        setWaitingForNewValue(false);
+        return;
+      }
       setDisplay(String(result));
       setPreviousValue(null);
       setOperation(null);
@@ -75,9 +108,11 @@ export default function Calculator() {
     setPreviousValue(null);
     setOperation(null);
     setWaitingForNewValue(false);
+    setIsError(false);
   };
 
   const handleBackspace = () => {
+    if (isError) return;
     if (display.length > 1) {
       setDisplay(display.slice(0, -1));
     } else {
@@ -86,11 +121,13 @@ export default function Calculator() {
   };
 
   const handleToggleSign = () => {
+    if (isError) return;
     const currentValue = parseFloat(display);
     setDisplay(String(-currentValue));
   };
 
   const handlePercentage = () => {
+    if (isError) return;
     const currentValue = parseFloat(display);
     setDisplay(String(currentValue / 100));
   };
@@ -135,7 +172,7 @@ export default function Calculator() {
 
       {/* Display */}
       <div className="mb-6 rounded-lg bg-zinc-900 dark:bg-zinc-950 p-4">
-        <div className="text-right text-4xl font-bold text-green-400 font-mono break-words">
+        <div className={`text-right text-4xl font-bold font-mono break-words ${isError ? 'text-red-400' : 'text-green-400'}`}>
           {display}
         </div>
       </div>
