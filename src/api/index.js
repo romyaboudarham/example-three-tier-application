@@ -28,9 +28,17 @@ app.post('/tasks', async (req, res) => {
     if (!title || typeof title !== 'string' || !title.trim()) {
       return res.status(400).json({ error: 'title is required' });
     }
+    
+    const trimmedTitle = title.trim();
+    
+    // Validate title length against schema constraint (varchar(500))
+    if (trimmedTitle.length > 500) {
+      return res.status(422).json({ error: 'title cannot exceed 500 characters' });
+    }
+    
     const { rows } = await db.query(
       'INSERT INTO tasks (title) VALUES ($1) RETURNING *',
-      [title.trim()]
+      [trimmedTitle]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -55,16 +63,18 @@ app.patch('/tasks/:id', async (req, res) => {
     const current = rows[0];
     const newCompleted = completed !== undefined ? Boolean(completed) : current.completed;
     
-    // Bug #3 fix: safely check if title is a string before calling trim()
     let newTitle = current.title;
     if (title !== undefined) {
       if (typeof title !== 'string') {
         return res.status(400).json({ error: 'title must be a string' });
       }
       newTitle = title.trim();
-      // Bug #4 fix: validate that the trimmed title is not empty
       if (!newTitle) {
         return res.status(400).json({ error: 'title cannot be empty' });
+      }
+      // Validate title length against schema constraint (varchar(500))
+      if (newTitle.length > 500) {
+        return res.status(422).json({ error: 'title cannot exceed 500 characters' });
       }
     }
 
@@ -79,7 +89,7 @@ app.patch('/tasks/:id', async (req, res) => {
   }
 });
 
-// DELETE /tasks/:id — delete a task (Bug #1 fix)
+// DELETE /tasks/:id — delete a task
 app.delete('/tasks/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
