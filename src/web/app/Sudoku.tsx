@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { generatePuzzle, createEmptyBoard, isBoardComplete, validateBoard, solveSudoku, SudokuBoard } from './sudoku-utils';
+import { useTheme } from './ThemeContext';
 
 export default function Sudoku() {
+  const { theme, toggleTheme } = useTheme();
   const [board, setBoard] = useState<SudokuBoard>([]);
-  const [originalBoard, setOriginalBoard] = useState<SudokuBoard>([]);
+  const [originalBoard, setOriginalBoard] = useState<SudokuBoard>([])
   const [userBoard, setUserBoard] = useState<SudokuBoard>([]);
   const [solved, setSolved] = useState(false);
   const [isValid, setIsValid] = useState(true);
@@ -90,7 +92,24 @@ export default function Sudoku() {
 
   return (
     <div className="w-full max-w-md mx-auto mb-8">
-      <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">Sudoku</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Sudoku</h2>
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-lg bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors"
+          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+        >
+          {theme === 'light' ? (
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1h4a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1h-4zm0 12a5 5 0 110-10 5 5 0 010 10zm0-9a4 4 0 100 8 4 4 0 000-8z" clipRule="evenodd" />
+            </svg>
+          )}
+        </button>
+      </div>
 
       {/* Status messages */}
       {solved && (
