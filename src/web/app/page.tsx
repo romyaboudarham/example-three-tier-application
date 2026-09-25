@@ -1,6 +1,7 @@
 import { getTasks, createTask, toggleTask, deleteTask } from './actions';
 import Counter from './Counter';
 import Calculator from './Calculator';
+import Sudoku from './Sudoku';
 
 export default async function Home() {
   const tasks = await getTasks();
@@ -17,6 +18,9 @@ export default async function Home() {
 
         {/* Calculator Component */}
         <Calculator />
+
+        {/* Sudoku Component */}
+        <Sudoku />
 
         <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-6">
           To-Do List
